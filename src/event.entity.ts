@@ -1,6 +1,6 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
-@Entity('events')
+@Entity()
 export class Event {
   @PrimaryGeneratedColumn()
   id: number;
@@ -11,7 +11,7 @@ export class Event {
   @Column()
   description: string;
 
-  @Column({ name: 'when_date' })
+  @Column()
   when: Date;
 
   @Column()
