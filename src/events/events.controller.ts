@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   HttpCode,
+  Logger,
   Param,
   Patch,
   Post,
@@ -16,6 +17,8 @@ import { UpdateEventDto } from './update-event.dto';
 
 @Controller('/events')
 export class EventsController {
+  readonly #logger = new Logger(EventsController.name);
+
   constructor(
     @InjectRepository(Event)
     private readonly repository: Repository<Event>,
