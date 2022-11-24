@@ -5,7 +5,9 @@ import {
   Get,
   HttpCode,
   Logger,
+  NotFoundException,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
 } from '@nestjs/common';
@@ -35,8 +37,12 @@ export class EventsController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id) {
-    return await this.repository.findOneBy(id);
+  async findOne(@Param('id', ParseIntPipe) id: number) {
+    const event = await this.repository.findOneBy({ id });
+    if (!event) {
+      throw new NotFoundException();
+    }
+    return event;
   }
 
   @Post()
@@ -49,7 +55,10 @@ export class EventsController {
 
   @Patch(':id')
   async update(@Param('id') id, @Body() input: UpdateEventDto) {
-    const event = await this.repository.findOneBy(id);
+    const event = await this.repository.findOne(id);
+    if (!event) {
+      throw new NotFoundException();
+    }
     return await this.repository.save({
       ...event,
       ...input,
@@ -60,7 +69,10 @@ export class EventsController {
   @Delete(':id')
   @HttpCode(204)
   async remove(@Param('id') id) {
-    const event = await this.repository.findOneBy(id);
+    const event = await this.repository.findOne(id);
+    if (!event) {
+      throw new NotFoundException();
+    }
     await this.repository.remove(event);
   }
 }
