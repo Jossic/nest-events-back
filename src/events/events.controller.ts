@@ -55,7 +55,7 @@ export class EventsController {
 
   @Patch(':id')
   async update(@Param('id') id, @Body() input: UpdateEventDto) {
-    const event = await this.repository.findOne(id);
+    const event = await this.repository.findOneBy({ id });
     if (!event) {
       throw new NotFoundException();
     }
@@ -69,7 +69,7 @@ export class EventsController {
   @Delete(':id')
   @HttpCode(204)
   async remove(@Param('id') id) {
-    const event = await this.repository.findOne(id);
+    const event = await this.repository.findOneBy({ id });
     if (!event) {
       throw new NotFoundException();
     }
