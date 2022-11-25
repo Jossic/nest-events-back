@@ -16,6 +16,7 @@ import { MoreThan, Repository } from 'typeorm';
 import { Attendee } from './attendee.entity';
 import { CreateEventDto } from './create-event.dto';
 import { Event } from './event.entity';
+import { EventsService } from './events.service';
 import { UpdateEventDto } from './update-event.dto';
 
 @Controller('/events')
@@ -27,6 +28,7 @@ export class EventsController {
     private readonly eventRepository: Repository<Event>,
     @InjectRepository(Attendee)
     private readonly attendeeRepository: Repository<Attendee>,
+    private readonly eventsService: EventsService,
   ) {}
 
   @Get()
@@ -40,17 +42,17 @@ export class EventsController {
   }
   @Get('/practice2')
   async Practice2() {
-    const event = await this.eventRepository.findOne({
-      where: { id: 1 },
-      relations: { attendees: true },
-    });
-    if (!event) {
-      throw new NotFoundException();
-    }
-    const attendee = new Attendee();
-    attendee.name = 'Jerry';
-    attendee.event = event;
-    await this.attendeeRepository.save({ ...attendee });
+    // const event = await this.eventRepository.findOne({
+    //   where: { id: 1 },
+    //   relations: { attendees: true },
+    // });
+    // if (!event) {
+    //   throw new NotFoundException();
+    // }
+    // const attendee = new Attendee();
+    // attendee.name = 'Jerry';
+    // attendee.event = event;
+    // await this.attendeeRepository.save({ ...attendee });
 
     // With Cascade - set cascade to true in oneToMany relation to event entity
     // const attendee = new Attendee();
@@ -58,15 +60,21 @@ export class EventsController {
     // event.attendees.push(attendee);
     // await this.eventRepository.save({ ...event });
 
-    return event;
+    return await this.eventRepository
+      .createQueryBuilder('e')
+      .select(['e.id', 'e.name'])
+      .orderBy('e.id', 'ASC')
+      .take(3)
+      .getMany();
   }
 
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    const event = await this.eventRepository.findOne({
-      where: { id },
-      relations: { attendees: true },
-    });
+    // const event = await this.eventRepository.findOne({
+    //   where: { id },
+    //   relations: { attendees: true },
+    // });
+    const event = await this.eventsService.getEvent(id);
     if (!event) {
       throw new NotFoundException();
     }
