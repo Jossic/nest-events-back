@@ -4,8 +4,8 @@ import { Attendee } from 'src/events/attendee.entity';
 import { Event } from 'src/events/event.entity';
 import { Subject } from 'src/school/subject.entity';
 import { Teacher } from 'src/school/teacher.entity';
-import { User } from '../user/user.entity';
-import { Profile } from '../user/profile.entity';
+import { User } from '../auth/user.entity';
+import { Profile } from '../auth/profile.entity';
 
 export default registerAs(
   'orm.config',

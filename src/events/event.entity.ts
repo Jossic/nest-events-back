@@ -1,11 +1,20 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  JoinColumn,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import { Attendee } from './attendee.entity';
+import { User } from '../auth/user.entity';
 
 export enum AttendeeAnswerEnum {
   Accepted = 1,
   Maybe,
   Rejected,
 }
+
 @Entity()
 export class Event {
   @PrimaryGeneratedColumn()
@@ -25,6 +34,13 @@ export class Event {
 
   @OneToMany(() => Attendee, (attendee) => attendee.event)
   attendees: Attendee[];
+
+  @ManyToOne(() => User)
+  @JoinColumn({ name: 'organizerId' })
+  organizer: User;
+
+  @Column({ nullable: true })
+  organizerId: number;
 
   attendeeCount?: number;
   attendeeRejected?: number;
