@@ -2,6 +2,8 @@ import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { AttendeeAnswerEnum, Event } from './event.entity';
+import { ListEvents, WhenEventFilter } from './inputs/list.events';
+import { paginate, PaginateOptions } from '../pagination/paginator';
 
 @Injectable()
 export class EventsService {
@@ -48,6 +50,50 @@ export class EventsService {
             answer: AttendeeAnswerEnum.Rejected,
           }),
       );
+  }
+
+  private async getEventsWithAttendeeCountFiltered(filter?: ListEvents) {
+    let query = this.getEventsWithAttendeeCountQuery();
+
+    if (!filter) {
+      return query;
+    }
+
+    if (filter.when) {
+      if (filter.when == WhenEventFilter.Today) {
+        query = query.andWhere(
+          `e.when >= NOW() AND e.when <= NOW() + INTERVAL '1 day'`,
+        );
+      }
+
+      if (filter.when == WhenEventFilter.Tomorrow) {
+        query = query.andWhere(
+          `e.when >= NOW() + INTERVAL '1 day' AND e.when <= NOW() + INTERVAL '2 day'`,
+        );
+      }
+
+      if (filter.when == WhenEventFilter.ThisWeek) {
+        query = query.andWhere(
+          'date_trunc( "week",e.when) = date_trunc( "week",NOW())',
+        );
+      }
+
+      if (filter.when == WhenEventFilter.NextWeek) {
+        query = query.andWhere('YEARWEEK(e.when, 1) = YEARWEEK(NOW(), 1) + 1');
+      }
+    }
+
+    return query;
+  }
+
+  public async getEventsWithAttendeeCountFilteredPaginated(
+    filter: ListEvents,
+    paginateOptions: PaginateOptions,
+  ) {
+    return await paginate(
+      await this.getEventsWithAttendeeCountFiltered(filter),
+      paginateOptions,
+    );
   }
 
   public async getEvent(id: number): Promise<Event | undefined> {

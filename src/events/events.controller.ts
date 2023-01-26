@@ -4,24 +4,28 @@ import {
   Delete,
   Get,
   HttpCode,
-  Logger,
+  // Logger,
   NotFoundException,
   Param,
   ParseIntPipe,
   Patch,
   Post,
+  Query,
+  UsePipes,
+  ValidationPipe,
 } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { MoreThan, Repository } from 'typeorm';
 import { Attendee } from './attendee.entity';
-import { CreateEventDto } from './create-event.dto';
+import { CreateEventDto } from './inputs/create-event.dto';
 import { Event } from './event.entity';
 import { EventsService } from './events.service';
-import { UpdateEventDto } from './update-event.dto';
+import { UpdateEventDto } from './inputs/update-event.dto';
+import { ListEvents } from './inputs/list.events';
 
 @Controller('/events')
 export class EventsController {
-  readonly #logger = new Logger(EventsController.name);
+  // readonly #logger = new Logger(EventsController.name);
 
   constructor(
     @InjectRepository(Event)
@@ -32,14 +36,23 @@ export class EventsController {
   ) {}
 
   @Get()
-  async findAll() {
-    return await this.eventRepository.find();
+  @UsePipes(new ValidationPipe({ transform: true }))
+  async findAll(@Query() filter: ListEvents) {
+    return await this.eventsService.getEventsWithAttendeeCountFilteredPaginated(
+      filter,
+      {
+        total: true,
+        currentPage: filter.page,
+        limit: 10,
+      },
+    );
   }
 
   @Get('/practice')
   async Practice() {
     return await this.eventRepository.find({ where: { id: MoreThan(2) } });
   }
+
   @Get('/practice2')
   async Practice2() {
     // const event = await this.eventRepository.findOne({
