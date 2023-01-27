@@ -37,7 +37,6 @@ export class EventsController {
 
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
-  @UseInterceptors(ClassSerializerInterceptor)
   async findAll(@Query() filter: ListEvents) {
     return await this.eventsService.getEventsWithAttendeeCountFilteredPaginated(
       filter,
@@ -85,10 +84,6 @@ export class EventsController {
   @Get(':id')
   @UseInterceptors(ClassSerializerInterceptor)
   async findOne(@Param('id', ParseIntPipe) id: number) {
-    // const event = await this.eventRepository.findOne({
-    //   where: { id },
-    //   relations: { attendees: true },
-    // });
     const event = await this.eventsService.getEvent(id);
     if (!event) {
       throw new NotFoundException();
