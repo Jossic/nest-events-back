@@ -8,6 +8,7 @@ import {
 import { Attendee } from './attendee.entity';
 import { User } from '../auth/user.entity';
 import { Expose } from 'class-transformer';
+import { PaginationResult } from '../pagination/paginator';
 
 @Entity()
 export class Event {
@@ -53,3 +54,5 @@ export class Event {
   @Expose()
   attendeeAccepted?: number;
 }
+
+export type PaginatedEvents = PaginationResult<Event>;
