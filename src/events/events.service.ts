@@ -1,12 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { DeleteResult, Repository } from 'typeorm';
-import { AttendeeAnswerEnum, Event } from './event.entity';
+import { Event } from './event.entity';
 import { ListEvents, WhenEventFilter } from './inputs/list.events';
 import { paginate, PaginateOptions } from '../pagination/paginator';
 import { CreateEventDto } from './inputs/create-event.dto';
 import { User } from '../auth/user.entity';
 import { UpdateEventDto } from './inputs/update-event.dto';
+import { AttendeeAnswerEnum } from './attendee.entity';
 
 @Injectable()
 export class EventsService {
