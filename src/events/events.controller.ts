@@ -31,19 +31,18 @@ import { AuthGuardJwt } from '../auth/auth-guard.jwt';
   strategy: 'excludeAll',
 })
 export class EventsController {
-  // readonly #logger = new Logger(EventsController.name);
-
   constructor(private readonly eventsService: EventsService) {}
 
   @Get()
   @UsePipes(new ValidationPipe({ transform: true }))
+  @UseInterceptors(ClassSerializerInterceptor)
   async findAll(@Query() filter: ListEvents) {
     return await this.eventsService.getEventsWithAttendeeCountFilteredPaginated(
       filter,
       {
         total: true,
         currentPage: filter.page,
-        limit: 10,
+        limit: 2,
       },
     );
   }
