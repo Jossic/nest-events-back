@@ -59,8 +59,6 @@ describe('EventsController', () => {
       .mockImplementation((): any => new Event({ organizerId: 8 }));
 
     try {
-      const user = new User();
-      console.log(user);
       await eventsController.remove(8, new User());
     } catch (error) {
       expect(error).toBeInstanceOf(ForbiddenException);
